@@ -11,9 +11,9 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      totalPedals: 0,
-      totalPedalsPage: 0,
-      pedalsPerPage: 10,
+      totalPlugins: 0,
+      totalPluginsPages: 0,
+      pluginsPerPage: 10,
       creator: '',
       pic: '',
       tags: [],
@@ -24,7 +24,7 @@ class App extends Component {
         min: '',
         max: ''
       }],
-      pedals: []
+      plugins: []
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,7 +37,7 @@ class App extends Component {
     });
   }
 
-  // When add a pedal
+  // When add a plugin
   handleSubmit(e) {
     // prevent the default behavior of the form 
     // by default it should refresh page, we don't want this
@@ -73,7 +73,7 @@ class App extends Component {
       // All items come from the Firebase db
       let items = callback.val();
       let newState = []; // we will store the items here
-      let pedalsPerPage = this.state.pedalsPerPage;
+      let pluginsPerPage = this.state.pluginsPerPage;
       for (let item in items) {
         newState.push({
           id: item,
@@ -86,9 +86,9 @@ class App extends Component {
       }
       // Update App state
       this.setState({
-        pedals: newState,
-        totalPedals: newState.length,
-        totalPedalsPages: (Math.ceil(newState.length / pedalsPerPage))*10        
+        plugins: newState,
+        totalPlugins: newState.length,
+        totalPluginsPages: (Math.ceil(newState.length / pluginsPerPage))*10        
       });
     });
   }
@@ -119,7 +119,7 @@ class App extends Component {
               <Breadcrumb.Item>Plugin store</Breadcrumb.Item>
             </Breadcrumb>
             <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
-              <h1 style={{ textAlign: 'center' }}>Pedal Boards</h1>
+              <h1 style={{ textAlign: 'center' }}>Plugins gallery</h1>
               <Search
                 placeholder="Search plugins"
                 onSearch={value => console.log(value)}
@@ -127,7 +127,7 @@ class App extends Component {
               />
               <br/><br/>
               <Row type="flex" justify="center" align="top">
-                {this.state.pedals.map((item) => {
+                {this.state.plugins.map((item) => {
                   return (
                     <Col xs={{span: 18, offset: 3}} sm={{span: 12, offset: 0}} lg={{span: 6, offset: 0}}>
                       <Card
@@ -144,7 +144,7 @@ class App extends Component {
                         <h3 style={{textAlign:'center',alignSelf:'center'}}>{item.details[0].name}</h3>
                         <p style={{textAlign:'center'}}>{item.creator}</p>
                         <Row type="flex" justify="center" align="top">
-                          <Button type="danger" onClick={() => this.removeItem(item.id)}>Remove pedal</Button>
+                          <Button type="danger" onClick={() => this.removeItem(item.id)}>Remove plugin</Button>
                         </Row>
                       </Card>
                     </Col>
@@ -153,7 +153,7 @@ class App extends Component {
               </Row>
               <br/><br/>
               <Row type="flex" justify="center" align="top">
-                <Pagination simple defaultCurrent={1} total={this.state.totalPedalsPages} />
+                <Pagination simple defaultCurrent={1} total={this.state.totalPluginsPages} />
               </Row>
               <br/><br/>
               <section className="add-item">
@@ -161,7 +161,7 @@ class App extends Component {
                   <input type="text" name="creator" placeholder="Vendeur/Créateur du plugin" onChange={this.handleChange} value={this.state.creator} />
                   <input type="url" name="pic" placeholder="URL de l'image" onChange={this.handleChange} value={this.state.pic} />
                   <input type="text" name="description" placeholder="Description" onChange={this.handleChange} value={this.state.description} />
-                  <button>Add Pedal</button>
+                  <button>Add Plugin</button>
                 </form>
               </section>
             </div>
