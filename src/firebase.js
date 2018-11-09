@@ -1,11 +1,11 @@
-import firebase from 'firebase';
-var config = {
-    apiKey: "AIzaSyC8abc5XODSRzj9s3doQShEqOxersZC_Jc",
-    authDomain: "pedalboard-world.firebaseapp.com",
-    databaseURL: "https://pedalboard-world.firebaseio.com",
-    projectId: "pedalboard-world",
-    storageBucket: "pedalboard-world.appspot.com",
-    messagingSenderId: "392159278554"
+import firebase from 'firebase'
+const config = {
+    apiKey: "AIzaSyCw9Fk79cJKUV09HiYZhJiwHp_NCLrxGR8",    
+    authDomain: "pedalboard-js.firebaseapp.com",
+    databaseURL: "https://pedalboard-js.firebaseio.com",
+    projectId: "pedalboard-js",
+    storageBucket: "pedalboard-js.appspot.com",
+    messagingSenderId: "331625343407"
 };
 firebase.initializeApp(config);
 export default firebase;
