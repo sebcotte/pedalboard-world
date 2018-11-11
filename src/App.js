@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
 import firebase from './firebase.js';
+import filterPlugins from "./filterPlugins";
+import SearchInput from "./SearchInput.js";
 
-import { Layout, Menu, Breadcrumb, Input, Card, Col, Row, Tag, Divider, Button, Pagination } from 'antd';
+import { Layout, Menu, Breadcrumb, Card, Col, Row, Tag, Divider, Button, Pagination } from 'antd';
 const { Header, Content, Footer } = Layout;
-const Search = Input.Search;
 
 class App extends Component {
 
@@ -14,22 +15,16 @@ class App extends Component {
       totalPlugins: 0,
       totalPluginsPages: 0,
       pluginsPerPage: 10,
-      creator: '',
-      pic: '',
-      tags: [],
-      description: '',
-      details: [{
-        name: '',
-        value: '',
-        min: '',
-        max: ''
-      }],
-      plugins: []
+      plugins: [],
+      filteredPlugins: [], // use this list for search bar
     }
+    // Event listeners
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
   }
 
+  // ----- BEGIN Event listeners -----
   handleChange(e) {
     // e should be an input, so we get the value of the input
     this.setState({
@@ -62,6 +57,13 @@ class App extends Component {
     });
   }
 
+  handleSearch(e) {
+    this.setState({
+      filteredPlugins: filterPlugins(e.target.value, this.state.plugins),
+    });
+  }
+  // ------ END Event Listeners --------
+
   // Function to get data from FireBase and save data in the state
   componentDidMount() {
     // We store data in 'pedals'
@@ -87,6 +89,7 @@ class App extends Component {
       // Update App state
       this.setState({
         plugins: newState,
+        filteredPlugins: newState,
         totalPlugins: newState.length,
         totalPluginsPages: (Math.ceil(newState.length / pluginsPerPage))*10        
       });
@@ -120,18 +123,15 @@ class App extends Component {
             </Breadcrumb>
             <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
               <h1 style={{ textAlign: 'center' }}>Plugins gallery</h1>
-              <Search
-                placeholder="Search plugins"
-                onSearch={value => console.log(value)}
-                enterButton
-              />
+              
+              <SearchInput textChange={this.handleSearch} />
+              
               <br/><br/>
               <Row type="flex" justify="center" align="top">
-                {this.state.plugins.map((item) => {
+                {this.state.filteredPlugins.map((item) => {
                   return (
-                    <Col xs={{span: 18, offset: 3}} sm={{span: 12, offset: 0}} lg={{span: 6, offset: 0}}>
+                    <Col key={item.id} xs={{span: 18, offset: 3}} sm={{span: 12, offset: 0}} lg={{span: 6, offset: 0}}>
                       <Card
-                        key={item.id}
                         cover={<img alt="example" src={item.pic} />}
                         style={{ marginLeft: 10,marginRight: 10, marginBottom: 20 }}
                       >
@@ -150,7 +150,7 @@ class App extends Component {
                     </Col>
                   )
                 })}
-              </Row>
+                </Row>
               <br/><br/>
               <Row type="flex" justify="center" align="top">
                 <Pagination simple defaultCurrent={1} total={this.state.totalPluginsPages} />
