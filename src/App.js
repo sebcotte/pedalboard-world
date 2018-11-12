@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import firebase from './firebase.js';
-import filterPlugins from "./filterPlugins";
+import {filterPlugins,filterPluginsByTag} from "./filterPlugins";
 import SearchInput from "./SearchInput.js";
 
 import { Layout, Menu, Breadcrumb, Card, Col, Row, Tag, Divider, Button, Pagination } from 'antd';
@@ -68,6 +68,13 @@ class App extends Component {
   handleSearch(e) {
     this.setState({
       filteredPlugins: filterPlugins(e.target.value, this.state.plugins),
+    });
+  }
+
+  handleTagSearch(e) {
+    console.log(e)
+    this.setState({
+      filteredPlugins: filterPluginsByTag(e, this.state.plugins),
     });
   }
   // ------ END Event Listeners --------
@@ -144,7 +151,7 @@ class App extends Component {
                         style={{ marginLeft: 10,marginRight: 10, marginBottom: 20 }}
                       >
                         <Row type="flex" justify="center" align="top">
-                          <Tag>{item.tags}</Tag>
+                          <Tag onClick={()=> {this.handleTagSearch(item.tags)}}>{item.tags}</Tag>
                           {//item.tags.map((tag) => {return <Tag>{tag}</Tag>})
                           }
                         </Row>
