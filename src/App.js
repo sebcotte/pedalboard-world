@@ -25,6 +25,14 @@ class App extends Component {
   }
 
   // ----- BEGIN Event listeners -----
+  handlePagination(current,size) {
+    let start = (this.state.pluginsPerPage*((current)-1));
+    let end = (start + this.state.pluginsPerPage);
+    this.setState({
+      filteredPlugins: this.state.plugins.slice(start, end)
+    })
+  }
+
   handleChange(e) {
     // e should be an input, so we get the value of the input
     this.setState({
@@ -89,9 +97,9 @@ class App extends Component {
       // Update App state
       this.setState({
         plugins: newState,
-        filteredPlugins: newState,
+        filteredPlugins: newState.slice(0,pluginsPerPage),
         totalPlugins: newState.length,
-        totalPluginsPages: (Math.ceil(newState.length / pluginsPerPage))*10        
+        totalPluginsPages: (Math.ceil((newState.length-1) / pluginsPerPage))*10        
       });
     });
   }
@@ -153,7 +161,11 @@ class App extends Component {
                 </Row>
               <br/><br/>
               <Row type="flex" justify="center" align="top">
-                <Pagination simple defaultCurrent={1} total={this.state.totalPluginsPages} />
+                <Pagination
+                simple
+                defaultCurrent={1}
+                total={this.state.totalPluginsPages}
+                onChange={(current,size)=> this.handlePagination(current,size)} />
               </Row>
               <br/><br/>
               <section className="add-item">
