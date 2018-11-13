@@ -11,6 +11,10 @@ export function filterPlugins(searchText, pluginsList) {
 export function filterPluginsByTag(searchedTag, pluginsList) {
     return pluginsList.filter(
         (item) => {
+            // For the moment we don't want several tags for each item
+            if(Array.isArray(item.tags)) {
+                return false;
+            }
             if( item.tags.toLowerCase().includes(searchedTag.toLowerCase()) ){
                 return true;
             }

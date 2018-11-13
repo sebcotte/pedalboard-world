@@ -50,7 +50,8 @@ class App extends Component {
     const item = {
       creator: this.state.creator,
       pic: this.state.pic,
-      tags: ['toto', 'tata'],
+      //tags: ['toto', 'tata'],
+      tags: 'titi',
       description: this.state.description,
       details: [{name: 'Name', value: 'Value', min: 'Min', max: 'Max'}]
     }
