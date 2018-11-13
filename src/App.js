@@ -17,11 +17,14 @@ class App extends Component {
       pluginsPerPage: 10,
       plugins: [],
       filteredPlugins: [], // use this list for search bar
+      mainTag: null,
+      isTagVisible: false
     }
     // Event listeners
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleDeletedMainTag = this.handleDeletedMainTag.bind(this);
   }
 
   // ----- BEGIN Event listeners -----
@@ -73,10 +76,19 @@ class App extends Component {
   }
 
   handleTagSearch(e) {
-    console.log(e)
     this.setState({
       filteredPlugins: filterPluginsByTag(e, this.state.plugins),
+      mainTag: e,
+      isTagVisible: true
     });
+  }
+
+  handleDeletedMainTag(e) {
+    this.setState({
+      filteredPlugins: filterPluginsByTag("", this.state.plugins),
+      mainTag: null,
+      isTagVisible: false
+    })
   }
   // ------ END Event Listeners --------
 
@@ -117,7 +129,7 @@ class App extends Component {
     itemRef.remove();
   }
 
-  render() {
+  render(){
     return (
         <Layout className="layout">
           <Header>
@@ -141,6 +153,13 @@ class App extends Component {
               <h1 style={{ textAlign: 'center' }}>Plugins gallery</h1>
               
               <SearchInput textChange={this.handleSearch} />
+              <Tag 
+                closable 
+                visible={this.state.isTagVisible} 
+                onClose={this.handleDeletedMainTag}
+              >
+              {this.state.mainTag}
+              </Tag>
               
               <br/><br/>
               <Row type="flex" justify="center" align="top">
