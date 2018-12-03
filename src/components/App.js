@@ -5,7 +5,9 @@ import Navigation from './Navigation'
 import * as routes from '../routes';
 import PluginStorePage from './PluginStorePage';
 import AddPluginPage from './AddPluginPage';
-import SingleViewPlugin from './SingleViewPlugin';
+import AccountPage from './AccountPage';
+import LoginPage from './LoginPage';
+import RegisterPage from './RegisterPage';
 
 import { Layout, Breadcrumb } from 'antd';
 const { Header, Content, Footer } = Layout;
@@ -21,7 +23,7 @@ class App extends Component {
             <Navigation />
           </Header>
 
-          <Content style={{ padding: '0 50px' }}>
+          <Content style={{ padding: '50px' }}>
             <Switch>
               <Route 
                 exact path={routes.HOME}
@@ -29,21 +31,28 @@ class App extends Component {
               />
 
               <Route 
-                path={routes.ADD_PLUGIN}
+                exact path={routes.ADD_PLUGIN}
                 component={AddPluginPage}
               />
 
               <Route 
-                path={routes.SINGLE_VIEW_PLUGIN}
-                component={SingleViewPlugin}
+                exact path={routes.ACCOUNT}
+                component={AccountPage}
+              />
+
+              <Route 
+                exact path={routes.LOGIN}
+                component={LoginPage}
+              />
+              <Route
+                exact path={routes.REGISTER}
+                component={RegisterPage}
               />
 
               <Route
                 render={ ()=> <h1>404 Page not found</h1>}
               />
-
-            </Switch>            
-            
+            </Switch>
           </Content>
           <Footer style={{ textAlign: 'center' }}>
             Ant Design ©2018 Created by Ant UED

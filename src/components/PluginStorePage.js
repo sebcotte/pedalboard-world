@@ -7,7 +7,6 @@ import { Card, Col, Row, Tag, Divider, Button, Pagination } from 'antd';
 import SearchInput from './SearchInput';
 
 class PluginStorePage extends Component {
-
     constructor() {
         super();
         this.state = {
@@ -18,6 +17,12 @@ class PluginStorePage extends Component {
             filteredPlugins: [], // use this list for search bar
             mainTag: null,
             isTagVisible: false
+        }
+        const user = firebase.auth().currentUser;
+        if (user) {
+          console.log(user)
+        } else {
+          console.log("aucun user")
         }
         // Event listeners
         this.handleChange = this.handleChange.bind(this);
