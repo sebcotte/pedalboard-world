@@ -9,12 +9,19 @@ import AccountPage from './AccountPage';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 
-import isUserLogged from "../functions/firebaseUtils";
+import * as firebaseUtils from "../functions/firebaseUtils";
 
-import { Layout, Breadcrumb } from 'antd';
+import { Layout } from 'antd';
 const { Header, Content, Footer } = Layout;
 
-class App extends Component {  
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {user:null}
+  }
+
+  componentDidMount(){
+  }
 
   render(){
     return (
@@ -27,59 +34,29 @@ class App extends Component {
 
           <Content style={{ padding: '50px' }}>
             <Switch>
-              <Route 
+              <Route
                 exact path={routes.HOME}
-                render={() => (
-                  isUserLogged ? (
-                    <PluginStorePage/>
-                  ) : (
-                    <Redirect to="/login"/>
-                  )
-                )}
+                component={PluginStorePage}
               />
 
               <Route 
                 exact path={routes.ADD_PLUGIN}
-                render={() => (
-                  isUserLogged ? (
-                    <AddPluginPage/>
-                  ) : (
-                    <Redirect to="/login"/>
-                  )
-                )}
+                component={AddPluginPage}
               />
 
               <Route 
                 exact path={routes.ACCOUNT}
-                render={() => (
-                  isUserLogged ? (
-                    <AccountPage/>
-                  ) : (
-                    <Redirect to="/login"/>
-                  )
-                )}
+                component={AccountPage}
               />
 
               <Route 
                 exact path={routes.LOGIN}
-                render={() => (
-                  isUserLogged ? (
-                    <Redirect to="/"/>
-                  ) : (
-                    <LoginPage/>
-                  )
-                )}
+                component={LoginPage}
               />
 
               <Route
                 exact path={routes.REGISTER}
-                render={() => (
-                  isUserLogged ? (
-                    <Redirect to="/"/>
-                  ) : (
-                    <RegisterPage/>
-                  )
-                )}
+                component={RegisterPage}
               />
 
               <Route

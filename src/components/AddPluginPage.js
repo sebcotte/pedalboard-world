@@ -4,6 +4,9 @@ import './AddPluginPage.css';
 import { Form, Select, Upload, Button, Icon, Input, Table, Popconfirm } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 
+import firebase from '../firebase.js';
+import * as firebaseUtils from "../functions/firebaseUtils";
+
 // un vendeur : URL du site du créateur
 // nom du créateur (kuiza)
 // une image
@@ -238,7 +241,12 @@ class EditableTable extends React.Component {
 }
 
 class AddPluginPage extends React.Component {
-    
+  authListener
+  authStrategy
+  constructor() {
+    super()
+    this._authStrategy = firebaseUtils.connectedPage.bind(this)
+  }
     handleSubmit = (e) => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
@@ -259,6 +267,12 @@ class AddPluginPage extends React.Component {
           return e;
         }
         return e && e.fileList;
+    }
+
+    componentDidMount() {
+      this.setState({
+        authListener: this._authStrategy()
+    })
     }
 
     render() {

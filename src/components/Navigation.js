@@ -43,7 +43,7 @@ class Navigation extends React.Component {
                         <Link to={routes.ACCOUNT}>My account</Link>
                     </Menu.Item>
                     <Menu.Item key="4">
-                        {this.state.user ? this.state.user.email : 'toto'}
+                        {this.state.user ? this.state.user.email : ''}
                     </Menu.Item>
                 </Menu>
             </div>

@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 
 import firebase from '../firebase.js';
+import * as firebaseUtils from "../functions/firebaseUtils";
 import {filterPlugins,filterPluginsByTag} from '../functions/filterPlugins';
 
 import { Card, Col, Row, Tag, Divider, Button, Pagination } from 'antd';
 import SearchInput from './SearchInput';
 
 class PluginStorePage extends Component {
+    authListener
+    authStrategy
     constructor() {
         super();
+        this._authStrategy = firebaseUtils.connectedPage.bind(this)
         this.state = {
             totalPlugins: 0,
             totalPluginsPages: 0,
@@ -17,12 +21,6 @@ class PluginStorePage extends Component {
             filteredPlugins: [], // use this list for search bar
             mainTag: null,
             isTagVisible: false
-        }
-        const user = firebase.auth().currentUser;
-        if (user) {
-          console.log(user)
-        } else {
-          console.log("aucun user")
         }
         // Event listeners
         this.handleChange = this.handleChange.bind(this);
@@ -126,6 +124,10 @@ class PluginStorePage extends Component {
             totalPluginsPages: (Math.ceil((newState.length-1) / pluginsPerPage))*10        
         });
         });
+
+        this.setState({
+            authListener: this._authStrategy()
+        })
     }
 
     removeItem(itemId) {
@@ -135,8 +137,8 @@ class PluginStorePage extends Component {
 
     render() {
         return (
-            <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
-                <h1 style={{ textAlign: 'center' }}>Plugins gallery</h1>
+            <div>
+                <h1 style={{ textAlign: 'center' }}>Galerie des plugins</h1>
                 
                 <SearchInput textChange={this.handleSearch} />
                 <Tag 

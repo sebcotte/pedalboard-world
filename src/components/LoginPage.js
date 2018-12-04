@@ -1,13 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Redirect, Link } from 'react-router-dom';
+
 import firebase from '../firebase.js';
+import * as firebaseUtils from "../functions/firebaseUtils";
+
 import {Form, Icon, Input, Button, Checkbox, Alert} from 'antd';
 import './LoginPage.css';
 
 const FormItem = Form.Item;
 
 class LoginPage extends React.Component {
+  authListener
+  authStrategy
   constructor(props) {
     super(props)
     this.state = {
@@ -15,6 +20,7 @@ class LoginPage extends React.Component {
       isLogged:false,
       errmsg: ""
     }
+    this._authStrategy = firebaseUtils.visitorPage.bind(this)
   }
 
   handleSubmit = (e) => {
@@ -24,7 +30,6 @@ class LoginPage extends React.Component {
         //console.log('Received values of form: ', values);
         firebase.auth().signInWithEmailAndPassword(values.email, values.password)
         .then((user) => {
-          console.log(user)
           this.setState(
             {
               isLogged:true,
@@ -46,6 +51,12 @@ class LoginPage extends React.Component {
         });
       }
     });
+  }
+
+  componentDidMount(){
+    this.setState({
+      authListener: this._authStrategy()
+    })
   }
 
   render() {
