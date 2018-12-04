@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import firebase from '../firebase.js';
 import {Form, Icon, Input, Button, Checkbox, Alert} from 'antd';
 import './LoginPage.css';
@@ -12,25 +12,36 @@ class LoginPage extends React.Component {
     super(props)
     this.state = {
       isLogErr:false,
+      isLogged:false,
       errmsg: ""
     }
   }
-
-  onClose = (e) => {
-    console.log(e, 'I was closed.');
-  };
 
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         //console.log('Received values of form: ', values);
-        firebase.auth().signInWithEmailAndPassword(values.email, values.password).catch((error) => {
+        firebase.auth().signInWithEmailAndPassword(values.email, values.password)
+        .then((user) => {
+          console.log(user)
+          this.setState(
+            {
+              isLogged:true,
+              isLogErr:false
+            }
+          )
+
+          this.props.history.replace("/")
+        })
+        .catch((error) => {
           // Handle Errors here.
           var errorMessage = error.message;
           this.setState(
-            {isLogErr:true,
-            errmsg:errorMessage}
+            {
+              isLogErr:true,
+              isLogged:false,
+              errmsg:errorMessage}
           )
         });
       }
@@ -50,17 +61,26 @@ class LoginPage extends React.Component {
           />
           : ''
         }
+        { this.state.isLogged
+          ? <Alert
+          message="Success Tips"
+          description="Detailed description and advices about successful copywriting."
+          type="success"
+          showIcon
+          />
+          : ''
+        }
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem>
             {getFieldDecorator('email', {
-              rules: [{ required: true, message: 'Please input your email!' }],
+              rules: [{ required: true, message: 'Veuillez entrer un mail' }],
             })(
               <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email" />
             )}
           </FormItem>
           <FormItem>
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please input your Password!' }],
+              rules: [{ required: true, message: 'Veuillez entrer un password' }],
             })(
               <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
             )}
@@ -70,13 +90,13 @@ class LoginPage extends React.Component {
               valuePropName: 'checked',
               initialValue: true,
             })(
-              <Checkbox>Remember me</Checkbox>
+              <Checkbox>Se souvenir de moi</Checkbox>
             )}
             <a className="login-form-forgot" href="">Forgot password</a>
             <Button type="primary" htmlType="submit" className="login-form-button">
               Log in
             </Button>
-            Or <a href="">register now!</a>
+            Ou <Link to="/register">Inscrivez-vous maintenant</Link>
           </FormItem>
         </Form>
       </div>
