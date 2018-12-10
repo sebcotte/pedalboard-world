@@ -31,11 +31,14 @@ class AccountPage extends React.Component {
     return (
       <div>
         <h1 style={{ textAlign: 'center' }}>Mon compte</h1>
-        <Row>
-          <Col span={6} offset={6}><Avatar size={64} icon="user" /></Col>
+        <Row type="flex" justify="center" align="middle">
+          <Col span={3} offset={8}><Avatar size={64} icon="user" /></Col>
           <Col span={12} offset={1}><h3>{this.state.user ? this.state.user.email : 'Undefined'}</h3></Col>
         </Row>
-        <Button onClick={() => {this.disconnectUser()}} type="primary">Deconnexion</Button>
+
+        <Row type="flex" justify="end" align="middle">
+          <Button onClick={() => {this.disconnectUser()}} type="primary">Deconnexion</Button>
+        </Row>
       </div>
     );
   }

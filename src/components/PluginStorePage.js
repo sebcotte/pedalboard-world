@@ -140,7 +140,10 @@ class PluginStorePage extends Component {
             <div>
                 <h1 style={{ textAlign: 'center' }}>Galerie des plugins</h1>
                 
-                <SearchInput textChange={this.handleSearch} />
+                <SearchInput
+                    placeholder="Rechercher plugin"
+                    textChange={this.handleSearch}
+                />
                 <Tag 
                 closable 
                 visible={this.state.isTagVisible} 
@@ -168,7 +171,7 @@ class PluginStorePage extends Component {
                         <h3 style={{textAlign:'center',alignSelf:'center'}}>{item.details[0].name}</h3>
                         <p style={{textAlign:'center'}}>{item.creator}</p>
                         <Row type="flex" justify="center" align="top">
-                            <Button type="danger" onClick={() => this.removeItem(item.id)}>Remove plugin</Button>
+                            <Button type="danger" onClick={() => this.removeItem(item.id)}>Supprimer plugin</Button>
                         </Row>
                         </Card>
                     </Col>

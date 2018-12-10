@@ -40,10 +40,7 @@ class Navigation extends React.Component {
                         <Link to={routes.ADD_PLUGIN}>Add plugin</Link>
                     </Menu.Item>
                     <Menu.Item key="3">
-                        <Link to={routes.ACCOUNT}>My account</Link>
-                    </Menu.Item>
-                    <Menu.Item key="4">
-                        {this.state.user ? this.state.user.email : ''}
+                        <Link to={routes.ACCOUNT}>My account {this.state.user ? '('+this.state.user.email+')' : ''}</Link>
                     </Menu.Item>
                 </Menu>
             </div>
