@@ -4,7 +4,6 @@ import './AddPluginPage.css';
 import { Form, Select, Upload, Button, Icon, Input, Table, Popconfirm } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 
-import firebase from '../firebase.js';
 import * as firebaseUtils from "../functions/firebaseUtils";
 
 // un vendeur : URL du site du créateur
@@ -154,7 +153,7 @@ class EditableTable extends React.Component {
             this.state.dataSource.length >= 1
               ? (
                 <Popconfirm title="Vous êtes sûr ?" onConfirm={() => this.handleDelete(record.key)}>
-                  <a href="javascript:;">Supprimer</a>
+                  <button>Supprimer</button>
                 </Popconfirm>
               ) : null
           );

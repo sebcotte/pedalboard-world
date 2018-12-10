@@ -1,14 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { Redirect } from 'react-router-dom';
 import firebase from '../firebase.js';
 import {
-    Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, Button, AutoComplete, Alert
+    Form, Input, Tooltip, Icon, Select, Button, Alert
 } from 'antd';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-const AutoCompleteOption = AutoComplete.Option;
 
 class RegisterPage extends React.Component {
   constructor(props) {
@@ -28,7 +25,7 @@ class RegisterPage extends React.Component {
         console.log('Received values of form: ', values);
         firebase.auth().createUserWithEmailAndPassword(values.email, values.password).catch((error) => {
             // Handle Errors here.
-            var errorCode = error.code;
+            //var errorCode = error.code;
             var errorMessage = error.message;
             this.setState(
               {isLogErr:true,
@@ -73,7 +70,6 @@ class RegisterPage extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { autoCompleteResult } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -106,9 +102,9 @@ class RegisterPage extends React.Component {
       </Select>
     );
 
-    const websiteOptions = autoCompleteResult.map(website => (
+    /*const websiteOptions = autoCompleteResult.map(website => (
       <AutoCompleteOption key={website}>{website}</AutoCompleteOption>
-    ));
+    ));*/
 
     return (
         <div>

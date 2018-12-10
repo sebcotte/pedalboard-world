@@ -13,10 +13,8 @@ class AccountPage extends React.Component {
   }
 
   disconnectUser() {
-    /* This is bugged. For now it should only serve to disconnect in a debug context */
     firebase.auth().signOut().then(function() {
-      console.log("NOOO")
-      //window.location.replace('/login');
+      console.log("Disconnecting user")
     }).catch(function(error) {
       console.log(error)
     });
@@ -37,7 +35,7 @@ class AccountPage extends React.Component {
           <Col span={6} offset={6}><Avatar size={64} icon="user" /></Col>
           <Col span={12} offset={1}><h3>{this.state.user ? this.state.user.email : 'Undefined'}</h3></Col>
         </Row>
-        <Button onClick={this.disconnectUser()} type="primary">Deconnexion</Button>
+        <Button onClick={() => {this.disconnectUser()}} type="primary">Deconnexion</Button>
       </div>
     );
   }

@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { Redirect, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import firebase from '../firebase.js';
 import * as firebaseUtils from "../functions/firebaseUtils";
@@ -103,7 +102,6 @@ class LoginPage extends React.Component {
             })(
               <Checkbox>Se souvenir de moi</Checkbox>
             )}
-            <a className="login-form-forgot" href="">Forgot password</a>
             <Button type="primary" htmlType="submit" className="login-form-button">
               Log in
             </Button>
