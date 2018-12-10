@@ -3,8 +3,10 @@ import { Redirect } from 'react-router-dom';
 import './AddPluginPage.css';
 import { Form, Select, Upload, Button, Icon, Input, Table, Popconfirm } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
+import firebase from '../firebase.js';
 
 import * as firebaseUtils from "../functions/firebaseUtils";
+import { cpus } from 'os';
 
 // un vendeur : URL du site du créateur
 // nom du créateur (kuiza)
@@ -246,33 +248,83 @@ class AddPluginPage extends React.Component {
     super()
     this._authStrategy = firebaseUtils.connectedPage.bind(this)
   }
-    handleSubmit = (e) => {
-        e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', values);
-                return <Redirect to="/account" />
-            }
+
+  handleSubmit = (e) => {
+      e.preventDefault();
+      this.props.form.validateFields((err, values) => {
+          if (!err) {
+            this.uploadPlugintoFirebase(values);
+          }
+      });
+  }
+
+  uploadPlugintoFirebase = (values) => {
+    let dataref = firebase.database().ref('plugins');
+
+    // Create a root reference
+    let storageRef = firebase.storage().ref();
+
+    let img = values["plugin-img"][0].originFileObj
+
+    // Create a reference to 'images/pic.jpg'
+    var imagesRef = storageRef.child('images/'+img.name);
+
+    var file = img // use the Blob or File API
+    imagesRef.put(file).then(function(snapshot) {
+      console.log('Uploaded a blob or file!');
+      snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        console.log("File available at", downloadURL);
+        let newPluginRef = dataref.push();
+        newPluginRef.set({
+          creator: values['creator-name'],
+          name: values['plugin-name'],
+          creatorWebsite: values['creator-website'],
+          tags: values['multiple-tags'],
+          description: values['plugin-desc'],
+          pic: downloadURL,
+          details: [
+            {control: '', max: 0, min: 0, value: 0},
+            {control: '', max: 0, min: 0, value: 0}
+          ]
         });
-    }
+      });
+    });
+  }
 
-    handleReset = () => {
-        this.props.form.resetFields();
-    }
+  handleImageUpload = (img) => {
+    // Create a root reference
+    var storageRef = firebase.storage().ref();
 
-    normFile = (e) => {
-        console.log('Upload event:', e);
-        if (Array.isArray(e)) {
-          return e;
-        }
-        return e && e.fileList;
-    }
+    // Create a reference to 'images/pic.jpg'
+    var imagesRef = storageRef.child('images/'+img.name);
 
-    componentDidMount() {
-      this.setState({
-        authListener: this._authStrategy()
+    var file = img // use the Blob or File API
+    return imagesRef.put(file).then(function(snapshot) {
+      console.log('Uploaded a blob or file!');
+      return snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        console.log("File available at", downloadURL);
+        return downloadURL;
+      });
+    });
+  }
+
+  handleReset = () => {
+      this.props.form.resetFields();
+  }
+
+  normFile = (e) => {
+      console.log('Upload event:', e);
+      if (Array.isArray(e)) {
+        return e;
+      }
+      return e && e.fileList;
+  }
+
+  componentDidMount() {
+    this.setState({
+      authListener: this._authStrategy()
     })
-    }
+  }
 
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -310,7 +362,18 @@ class AddPluginPage extends React.Component {
                         <Input />
                     )}
                 </FormItem>
-
+                <FormItem
+                    {...formItemLayout}
+                    label="Nom du plugin"
+                >
+                    {getFieldDecorator('plugin-name', {
+                        rules: [{
+                            required: true, message: 'Veuillez écrire un nom!',
+                        }],
+                    })(
+                        <Input />
+                    )}
+                </FormItem>
                 <FormItem
                     {...formItemLayout}
                     label="Tag du plugin"
@@ -339,7 +402,7 @@ class AddPluginPage extends React.Component {
                         valuePropName: 'fileList',
                         getValueFromEvent: this.normFile,
                     })(
-                        <Upload name="pluginImg" action="/upload.do" listType="picture">
+                        <Upload name="pluginImg" customRequest={() => {return null}} listType="picture">
                         <Button>
                             <Icon type="upload" /> Télécharger
                         </Button>

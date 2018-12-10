@@ -1,22 +1,19 @@
 export function filterPlugins(searchText, pluginsList) {
     return pluginsList.filter(
         (item) => {
-            if( item.details[0].name.toLowerCase().includes(searchText.toLowerCase()) ){
+            if( item.name.toLowerCase().includes(searchText.toLowerCase()) ){
                 return true;
             }
             return false;
         });
 }
 
-export function filterPluginsByTag(searchedTag, pluginsList) {
+export function filterPluginsByTag(searchedTag, pluginsList, pluginsPerPage) {
+    if (searchedTag === '') return pluginsList.slice(0,pluginsPerPage)
     return pluginsList.filter(
         (item) => {
-            // For the moment we don't want several tags for each item
-            if(Array.isArray(item.tags)) {
-                return false;
-            }
-            if( item.tags.toLowerCase().includes(searchedTag.toLowerCase()) ){
-                return true;
+            if (item.tags.includes(searchedTag)) {
+                return true
             }
             return false;
         });
