@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import firebase from '../firebase.js';
 import * as firebaseUtils from "../functions/firebaseUtils";
 import {
-    Form, Input, Tooltip, Icon, Select, Button, Alert
+    Form, Input, Tooltip, Icon, Select, Button, Alert, Row, Col
 } from 'antd';
 
 const FormItem = Form.Item;
@@ -25,9 +26,19 @@ class RegisterPage extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        firebase.auth().createUserWithEmailAndPassword(values.email, values.password).catch((error) => {
+        firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
+        .then((result)=>{
+          console.log(result)
+          let newUser = firebase.database().ref('users').push();
+          newUser.set({
+            id: result.user.uid,
+            username: values['nickname'],
+            email: values['email'],
+            phone: values['phone']
+          });
+        })
+        .catch((error) => {
             // Handle Errors here.
-            //var errorCode = error.code;
             var errorMessage = error.message;
             this.setState(
               {isLogErr:true,
@@ -112,89 +123,77 @@ class RegisterPage extends React.Component {
 
     return (
         <div>
-            { this.state.isLogErr
-            ? <Alert
-            message="Error"
-            description={this.state.errmsg}
-            type="error"
-            showIcon
-            />
-            : ''
-            }
-            <Form onSubmit={this.handleSubmit}>
-                <FormItem
-                {...formItemLayout}
-                label="E-mail"
-                >
-                {getFieldDecorator('email', {
-                    rules: [{
-                    type: 'email', message: 'Ceci n\'est pas une adresse mail valide !',
-                    }, {
-                    required: true, message: 'Veuillez entrer votre email !',
-                    }],
-                })(
-                    <Input />
-                )}
-                </FormItem>
-                <FormItem
-                {...formItemLayout}
-                label="Mot de passe"
-                >
-                {getFieldDecorator('password', {
-                    rules: [{
-                    required: true, message: 'Veuillez entrer un mot de passe !',
-                    }, {
-                    validator: this.validateToNextPassword,
-                    }],
-                })(
-                    <Input type="password" />
-                )}
-                </FormItem>
-                <FormItem
-                {...formItemLayout}
-                label="Confirmer mot de passe"
-                >
-                {getFieldDecorator('confirm', {
-                    rules: [{
-                    required: true, message: 'Veuillez confirmer votre mot de passe !',
-                    }, {
-                    validator: this.compareToFirstPassword,
-                    }],
-                })(
-                    <Input type="password" onBlur={this.handleConfirmBlur} />
-                )}
-                </FormItem>
-                <FormItem
-                {...formItemLayout}
-                label={(
-                    <span>
-                    Pseudo&nbsp;
-                    <Tooltip title="Ce sera le nom qui sera affiché sur le site">
-                        <Icon type="question-circle-o" />
-                    </Tooltip>
-                    </span>
-                )}
-                >
-                {getFieldDecorator('nickname', {
-                    rules: [{ required: true, message: 'Veuillez entrer un pseudo !', whitespace: true }],
-                })(
-                    <Input />
-                )}
-                </FormItem>
-                <FormItem
-                {...formItemLayout}
-                label="Téléphone"
-                >
-                {getFieldDecorator('phone', {
-                    rules: [{ required: true, message: 'Veuillez entrer votre numéro de téléphone !' }],
-                })(
-                    <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
-                )}
-                </FormItem>
-                <FormItem {...tailFormItemLayout}>
-                <Button type="primary" htmlType="submit">S'enregistrer</Button>
-                </FormItem>
-            </Form>
+          <Row>
+            <h1>S'enregistrer</h1>
+          </Row>
+          <Row type="flex" justify="start">
+            <Col span={12}>
+              { this.state.isLogErr
+              ? <Alert
+              message="Error"
+              description={this.state.errmsg}
+              type="error"
+              showIcon
+              />
+              : ''
+              }
+              <Form onSubmit={this.handleSubmit}>
+                  <FormItem>
+                  {getFieldDecorator('email', {
+                      rules: [{
+                      type: 'email', message: 'Ceci n\'est pas une adresse mail valide !',
+                      }, {
+                      required: true, message: 'Veuillez entrer votre email !',
+                      }],
+                  })(
+                      <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email"  />
+                  )}
+                  </FormItem>
+                  <FormItem>
+                  {getFieldDecorator('password', {
+                      rules: [{
+                      required: true, message: 'Veuillez entrer un mot de passe !',
+                      }, {
+                      validator: this.validateToNextPassword,
+                      }],
+                  })(
+                      <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Mot de passe" />
+                  )}
+                  </FormItem>
+                  <FormItem>
+                  {getFieldDecorator('confirm', {
+                      rules: [{
+                      required: true, message: 'Veuillez confirmer votre mot de passe !',
+                      }, {
+                      validator: this.compareToFirstPassword,
+                      }],
+                  })(
+                      <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Confirmer mot de passe" onBlur={this.handleConfirmBlur} />
+                  )}
+                  </FormItem>
+                  <FormItem>
+                  {getFieldDecorator('nickname', {
+                      rules: [{ required: true, message: 'Veuillez entrer un pseudo !', whitespace: true }],
+                  })(
+                      <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
+                  )}
+                  </FormItem>
+                  <FormItem>
+                  {getFieldDecorator('phone', {
+                      rules: [{ required: true, message: 'Veuillez entrer votre numéro de téléphone !' }],
+                  })(
+                      <Input prefix={<Icon type="phone" style={{ color: 'rgba(0,0,0,.25)' }} />} addonBefore={prefixSelector} style={{ width: '100%' }} placeholder="06 78 65 43 56" />
+                  )}
+                  </FormItem>
+                  <FormItem>
+                    <Button type="primary" htmlType="submit" className="login-form-button">
+                      S'enregistrer
+                    </Button>
+                  Ou <Link to="/login">Vous connecter</Link>
+                  </FormItem>
+              </Form>
+            </Col>
+          </Row>
         </div>
     );
   }
