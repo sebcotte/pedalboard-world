@@ -14,10 +14,11 @@ export function connectedPage() {
 
 export function visitorPage() {
     const subscription = firebase.auth().onAuthStateChanged((user)=>{
-        if(user && user.mail) {
-            window.location.replace("/login")
+        if(user) {
+            window.location.replace("/")
             return;
         }
+        this.user = user
     });
 
     return subscription
