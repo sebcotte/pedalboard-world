@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import firebase from '../firebase.js';
 import * as firebaseUtils from "../functions/firebaseUtils";
 
-import {Form, Icon, Input, Button, Checkbox, Alert} from 'antd';
+import {Form, Icon, Input, Button, Checkbox, Alert, Row, Col} from 'antd';
 import './LoginPage.css';
 
 const FormItem = Form.Item;
@@ -62,52 +62,59 @@ class LoginPage extends React.Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <div>
-        { this.state.isLogErr
-          ? <Alert
-          message="Error"
-          description={this.state.errmsg}
-          type="error"
-          showIcon
-          />
-          : ''
-        }
-        { this.state.isLogged
-          ? <Alert
-          message="Success Tips"
-          description="Detailed description and advices about successful copywriting."
-          type="success"
-          showIcon
-          />
-          : ''
-        }
-        <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem>
-            {getFieldDecorator('email', {
-              rules: [{ required: true, message: 'Veuillez entrer un mail' }],
-            })(
-              <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email" />
-            )}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Veuillez entrer un password' }],
-            })(
-              <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
-            )}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('remember', {
-              valuePropName: 'checked',
-              initialValue: true,
-            })(
-              <Checkbox>Se souvenir de moi</Checkbox>
-            )}
-            <Button type="primary" htmlType="submit" className="login-form-button">
-              Log in
-            </Button>
-            Ou <Link to="/register">Inscrivez-vous maintenant</Link>
-          </FormItem>
-        </Form>
+        <Row>
+          <h1>Se connecter</h1>
+        </Row>
+        <Row type="flex" justify="start">
+          <Col span={18}>
+            { this.state.isLogErr
+            ? <Alert
+            message="Error"
+            description={this.state.errmsg}
+            type="error"
+            showIcon
+            />
+            : ''
+          }
+          { this.state.isLogged
+            ? <Alert
+            message="Success Tips"
+            description="Detailed description and advices about successful copywriting."
+            type="success"
+            showIcon
+            />
+            : ''
+          }
+          <Form onSubmit={this.handleSubmit} className="login-form">
+            <FormItem>
+              {getFieldDecorator('email', {
+                rules: [{ required: true, message: 'Veuillez entrer un mail' }],
+              })(
+                <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email" />
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('password', {
+                rules: [{ required: true, message: 'Veuillez entrer un password' }],
+              })(
+                <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('remember', {
+                valuePropName: 'checked',
+                initialValue: true,
+              })(
+                <Checkbox>Se souvenir de moi</Checkbox>
+              )}
+              <Button type="primary" htmlType="submit" className="login-form-button">
+                Log in
+              </Button>
+              Ou <Link to="/register">Inscrivez-vous maintenant</Link>
+            </FormItem>
+          </Form>
+          </Col>
+        </Row>
       </div>
     );
   }
