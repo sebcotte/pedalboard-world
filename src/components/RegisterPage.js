@@ -25,10 +25,8 @@ class RegisterPage extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
         firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
         .then((result)=>{
-          console.log(result)
           let newUser = firebase.database().ref('users').push();
           newUser.set({
             id: result.user.uid,
