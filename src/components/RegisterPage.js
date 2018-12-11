@@ -1,5 +1,6 @@
 import React from 'react';
 import firebase from '../firebase.js';
+import * as firebaseUtils from "../functions/firebaseUtils";
 import {
     Form, Input, Tooltip, Icon, Select, Button, Alert
 } from 'antd';
@@ -16,6 +17,7 @@ class RegisterPage extends React.Component {
         isLogErr:false,
         errmsg: ""
     }
+    this._authStrategy = firebaseUtils.visitorPage.bind(this)
   }
 
   handleSubmit = (e) => {
@@ -44,7 +46,7 @@ class RegisterPage extends React.Component {
   compareToFirstPassword = (rule, value, callback) => {
     const form = this.props.form;
     if (value && value !== form.getFieldValue('password')) {
-      callback('Two passwords that you enter is inconsistent!');
+      callback('Les deux mots de passe que vous avez entré sont invalides !');
     } else {
       callback();
     }
@@ -66,6 +68,12 @@ class RegisterPage extends React.Component {
       autoCompleteResult = ['.com', '.org', '.net'].map(domain => `${value}${domain}`);
     }
     this.setState({ autoCompleteResult });
+  }
+
+  componentDidMount(){
+    this.setState({
+      authListener: this._authStrategy()
+    })
   }
 
   render() {
@@ -102,10 +110,6 @@ class RegisterPage extends React.Component {
       </Select>
     );
 
-    /*const websiteOptions = autoCompleteResult.map(website => (
-      <AutoCompleteOption key={website}>{website}</AutoCompleteOption>
-    ));*/
-
     return (
         <div>
             { this.state.isLogErr
@@ -124,9 +128,9 @@ class RegisterPage extends React.Component {
                 >
                 {getFieldDecorator('email', {
                     rules: [{
-                    type: 'email', message: 'The input is not valid E-mail!',
+                    type: 'email', message: 'Ceci n\'est pas une adresse mail valide !',
                     }, {
-                    required: true, message: 'Please input your E-mail!',
+                    required: true, message: 'Veuillez entrer votre email !',
                     }],
                 })(
                     <Input />
@@ -134,11 +138,11 @@ class RegisterPage extends React.Component {
                 </FormItem>
                 <FormItem
                 {...formItemLayout}
-                label="Password"
+                label="Mot de passe"
                 >
                 {getFieldDecorator('password', {
                     rules: [{
-                    required: true, message: 'Please input your password!',
+                    required: true, message: 'Veuillez entrer un mot de passe !',
                     }, {
                     validator: this.validateToNextPassword,
                     }],
@@ -148,11 +152,11 @@ class RegisterPage extends React.Component {
                 </FormItem>
                 <FormItem
                 {...formItemLayout}
-                label="Confirm Password"
+                label="Confirmer mot de passe"
                 >
                 {getFieldDecorator('confirm', {
                     rules: [{
-                    required: true, message: 'Please confirm your password!',
+                    required: true, message: 'Veuillez confirmer votre mot de passe !',
                     }, {
                     validator: this.compareToFirstPassword,
                     }],
@@ -164,35 +168,34 @@ class RegisterPage extends React.Component {
                 {...formItemLayout}
                 label={(
                     <span>
-                    Nickname&nbsp;
-                    <Tooltip title="What do you want others to call you?">
+                    Pseudo&nbsp;
+                    <Tooltip title="Ce sera le nom qui sera affiché sur le site">
                         <Icon type="question-circle-o" />
                     </Tooltip>
                     </span>
                 )}
                 >
                 {getFieldDecorator('nickname', {
-                    rules: [{ required: true, message: 'Please input your nickname!', whitespace: true }],
+                    rules: [{ required: true, message: 'Veuillez entrer un pseudo !', whitespace: true }],
                 })(
                     <Input />
                 )}
                 </FormItem>
                 <FormItem
                 {...formItemLayout}
-                label="Phone Number"
+                label="Téléphone"
                 >
                 {getFieldDecorator('phone', {
-                    rules: [{ required: true, message: 'Please input your phone number!' }],
+                    rules: [{ required: true, message: 'Veuillez entrer votre numéro de téléphone !' }],
                 })(
                     <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
                 )}
                 </FormItem>
                 <FormItem {...tailFormItemLayout}>
-                <Button type="primary" htmlType="submit">Register</Button>
+                <Button type="primary" htmlType="submit">S'enregistrer</Button>
                 </FormItem>
             </Form>
         </div>
-      
     );
   }
 }
