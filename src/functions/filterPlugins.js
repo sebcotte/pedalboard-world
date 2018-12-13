@@ -1,4 +1,5 @@
-export function filterPlugins(searchText, pluginsList) {
+export function filterPlugins(searchText, pluginsList, pluginsPerPage) {
+    if (searchText == '') return pluginsList.slice(0,pluginsPerPage)
     return pluginsList.filter(
         (item) => {
             if( item.name.toLowerCase().includes(searchText.toLowerCase()) ){
