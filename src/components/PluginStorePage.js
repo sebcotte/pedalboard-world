@@ -46,15 +46,15 @@ class PluginStorePage extends Component {
 
     handleSearch(e) {
         this.setState({
-        filteredPlugins: filterPlugins(e.target.value, this.state.plugins),
+            filteredPlugins: filterPlugins(e.target.value, this.state.plugins, this.state.pluginsPerPage),
         });
     }
 
     handleTagSearch(e) {
         this.setState({
-        filteredPlugins: filterPluginsByTag(e, this.state.plugins),
-        mainTag: e,
-        isTagVisible: true
+            filteredPlugins: filterPluginsByTag(e, this.state.plugins),
+            mainTag: e,
+            isTagVisible: true
         });
     }
 
@@ -83,6 +83,7 @@ class PluginStorePage extends Component {
             for (let item in items) {
                 newState.push({
                     id: item,
+                    name: items[item].name,
                     creator: items[item].creator,
                     pic: items[item].pic,
                     tags: items[item].tags,
@@ -126,7 +127,7 @@ class PluginStorePage extends Component {
     
                 <Row type="flex" justify="center" align="top">
                 {this.state.filteredPlugins.map((item) => {
-                    //console.log(item.pic);
+                    console.log(item);
                     return (
                     <Col key={item.id} xs={{span: 18, offset: 3}} sm={{span: 12, offset: 0}} lg={{span: 6, offset: 0}}>
                         <Card
@@ -142,6 +143,7 @@ class PluginStorePage extends Component {
                         <h3 style={{textAlign:'center',alignSelf:'center'}}>{item.name}</h3>
                         <p style={{textAlign:'center'}}>{item.creator}</p>
                         <Row type="flex" justify="center" align="top">
+                            <Button type="primary" href={"plugin/"+item.id}>Détails du plugin</Button><br/>
                             <Button type="danger" onClick={() => this.removeItem(item.id)}>Supprimer plugin</Button>
                         </Row>
                         </Card>
