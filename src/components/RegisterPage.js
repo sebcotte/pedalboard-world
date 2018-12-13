@@ -18,7 +18,7 @@ class RegisterPage extends React.Component {
         isLogErr:false,
         errmsg: ""
     }
-    this._authStrategy = firebaseUtils.visitorPage.bind(this)
+    //this._authStrategy = firebaseUtils.visitorPage.bind(this)
   }
 
   handleSubmit = (e) => {
@@ -80,9 +80,9 @@ class RegisterPage extends React.Component {
   }
 
   componentDidMount(){
-    this.setState({
+    /*this.setState({
       authListener: this._authStrategy()
-    })
+    })*/
   }
 
   render() {
