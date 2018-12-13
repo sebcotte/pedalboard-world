@@ -5,5 +5,5 @@ It shows existing pedalboards available on e-shops.
 
 ## How to start
 
-npm install
+npm install  
 npm start
