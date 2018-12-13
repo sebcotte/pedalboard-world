@@ -127,7 +127,6 @@ class PluginStorePage extends Component {
     
                 <Row type="flex" justify="center" align="top">
                 {this.state.filteredPlugins.map((item) => {
-                    console.log(item);
                     return (
                     <Col key={item.id} xs={{span: 18, offset: 3}} sm={{span: 12, offset: 0}} lg={{span: 6, offset: 0}}>
                         <Card

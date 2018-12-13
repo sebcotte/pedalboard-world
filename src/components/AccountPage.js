@@ -9,21 +9,19 @@ class AccountPage extends React.Component {
   constructor() {
     super()
     this.state = {
-      user: null
+      user: {}
     }
     this._authStrategy = firebaseUtils.connectedPage.bind(this);
-    this.getUserInfos = this.getUserInfos.bind(this);
   }
 
   getUserInfos() {
-    let userId = -1;
-    if(firebaseUtils.getLoggedUser()) {
-      userId = firebaseUtils.getLoggedUser().uid;
-      console.log(userId);
-    }
-    let currentUser = firebase.database().ref(`/users/${userId}`);
-    
-    return currentUser;
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          user: user
+        })
+      }
+    });
   }
 
   disconnectUser() {
@@ -35,9 +33,9 @@ class AccountPage extends React.Component {
   }
   
   componentDidMount() {
+    this.getUserInfos()
     this.setState({
-      authListener: this._authStrategy(),
-      user: this.getUserInfos()
+      authListener: this._authStrategy()
     });
   }
 
