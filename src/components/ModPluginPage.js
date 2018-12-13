@@ -152,7 +152,7 @@ class EditableTable extends React.Component {
         dataIndex: 'operation',
         render: (text, record) => {
           return (
-            this.state.dataSource.length >= 1
+            this.props.source.length >= 1
               ? (
                 <Popconfirm title="Vous êtes sûr ?" onConfirm={() => this.handleDelete(record.key)}>
                   <button>Supprimer</button>
@@ -161,16 +161,15 @@ class EditableTable extends React.Component {
           );
         },
       }];
-  
       this.state = {
         dataSource: [],
         count: 0,
-        displayTable: false
+        displayTable: true
       };
     }
   
     handleDelete = (key) => {
-      const dataSource = [...this.state.dataSource].filter(item => item.key !== key);
+      const dataSource = [...this.props.source].filter(item => item.key !== key);
       this.setState({
         dataSource: dataSource
       });
@@ -178,7 +177,8 @@ class EditableTable extends React.Component {
     }
   
     handleAdd = () => {
-      const { count, dataSource } = this.state;
+      const dataSource = this.props.source;
+      const count = dataSource[dataSource.length-1].key+1;
       const newData = {
         key: count,
         control: 'Contrôle',
@@ -188,14 +188,13 @@ class EditableTable extends React.Component {
       };
       this.setState({
         dataSource: [...dataSource, newData],
-        count: count + 1,
-        displayTable: true
+        count: count
       });
       this.props.handler([...dataSource, newData])
     }
   
     handleSave = (row) => {
-      const newData = [...this.state.dataSource];
+      const newData = [...this.props.source];
       const index = newData.findIndex(item => row.key === item.key);
       const item = newData[index];
       newData.splice(index, 1, {
@@ -207,7 +206,6 @@ class EditableTable extends React.Component {
     }
   
     render() {
-      const { dataSource } = this.state;
       const components = {
         body: {
           row: EditableFormRow,
@@ -238,7 +236,7 @@ class EditableTable extends React.Component {
             components={components}
             rowClassName={() => 'editable-row'}
             bordered
-            dataSource={this.state.dataSource}
+            dataSource={this.props.source}
             columns={columns}
           />
         </div>
@@ -246,17 +244,58 @@ class EditableTable extends React.Component {
     }
 }
 
-class AddPluginPage extends React.Component {
+class ModPluginPage extends React.Component {
   authListener
   authStrategy
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this._authStrategy = firebaseUtils.connectedPage.bind(this)
     this.handleAddControl.bind(this)
     this.state = {
       controlData: [],
-      isAddSuccess: false
+      isAddSuccess: false,
+      plugin: {
+          creator: '',
+          name: '',
+          creatorWebsite: '',
+          tags: [],
+          description: '',
+          pic: ''
+      },
+      param: this.props.match.params
     }
+  }
+
+  fillInputs = (values) => {
+    this.props.form.setFieldsValue({
+      creatorName: values.creator,
+      pluginName: values.name,
+      creatorWebsite: values.creatorWebsite,
+      multipleTags: values.tags,
+      pluginDesc: values.description
+    });
+  }
+
+  getModdedPlugin = () => {
+    // We get the target plugin id
+    var pluginId = this.state.param.id;
+    // We store data in 'plugins'
+    const itemsRef = firebase.database().ref('plugins/'+pluginId);
+    const picsRef = firebase.storage().ref();
+    // If one item has been added in the database
+    // Or if it's the first time the event listener has been attached
+    // the callback is called
+    itemsRef.on('value', (callback) => {
+        // All items come from the Firebase db
+        let plugin = callback.val();
+        //console.log(plugin)
+        this.fillInputs(plugin)
+        // Update App state
+        this.setState({
+          controlData: plugin.details,
+          plugin: plugin
+        });
+    });
   }
 
   handleAddControl = (e) => {
@@ -275,7 +314,8 @@ class AddPluginPage extends React.Component {
   }
 
   uploadPlugintoFirebase = (values) => {
-    let dataref = firebase.database().ref('plugins');
+    let dataref = firebase.database().ref('plugins').child(this.state.param.id);
+    console.log(values)
 
     // Create var of ctrls
     let controls = this.state.controlData
@@ -283,30 +323,42 @@ class AddPluginPage extends React.Component {
     // Create a root reference
     let storageRef = firebase.storage().ref();
 
-    let img = values["plugin-img"][0].originFileObj
-
-    // Create a reference to 'images/pic.jpg'
-    var imagesRef = storageRef.child('images/'+img.name);
-
-    var file = img // use the Blob or File API
-    imagesRef.put(file).then((snapshot) => {
-      snapshot.ref.getDownloadURL().then((downloadURL) => {
-        let newPluginRef = dataref.push();
-        newPluginRef.set({
-          creator: values['creator-name'],
-          name: values['plugin-name'],
-          creatorWebsite: values['creator-website'],
-          tags: values['multiple-tags'],
-          description: values['plugin-desc'],
-          pic: downloadURL,
-          details: controls
+    if(values["pluginImg"][0].originFileObj) {
+      const img = values["pluginImg"][0].originFileObj
+      // Create a reference to 'images/pic.jpg'
+      var imagesRef = storageRef.child('images/'+img.name);
+      var file = img // use the Blob or File API
+      imagesRef.put(file).then((snapshot) => {
+        snapshot.ref.getDownloadURL().then((downloadURL) => {
+          dataref.update({
+            creator: values['creatorName'],
+            name: values['pluginName'],
+            creatorWebsite: values['creatorWebsite'],
+            tags: values['multipleTags'],
+            description: values['pluginDesc'],
+            pic: downloadURL,
+            details: controls
+          });
+          this.handleReset()
+          this.setState({
+            isAddSuccess: true
+          })
         });
-        this.handleReset()
-        this.setState({
-          isAddSuccess: true
-        })
       });
-    });
+    } else {
+      dataref.update({
+        creator: values['creatorName'],
+        name: values['pluginName'],
+        creatorWebsite: values['creatorWebsite'],
+        tags: values['multipleTags'],
+        description: values['pluginDesc'],
+        details: controls
+      });
+      this.handleReset()
+      this.setState({
+        isAddSuccess: true
+      })
+    }
   }
 
   handleImageUpload = (img) => {
@@ -339,6 +391,7 @@ class AddPluginPage extends React.Component {
   }
 
   componentDidMount() {
+    this.getModdedPlugin()
     this.setState({
       authListener: this._authStrategy()
     })
@@ -346,6 +399,13 @@ class AddPluginPage extends React.Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
+        const fileList = [{
+          uid: '-1',
+          name: 'img.png',
+          status: 'done',
+          url: this.state.plugin.pic,
+          thumbUrl: this.state.plugin.pic,
+        }];
 
         const formItemLayout = {
             labelCol: { span: 6 },
@@ -355,7 +415,7 @@ class AddPluginPage extends React.Component {
         return (
           <div>
             <Row>
-              <h1>Ajouter un plugin</h1>
+              <h1>Modifier un plugin</h1>
             </Row>
             { this.state.isAddSuccess
               ? <Alert
@@ -371,7 +431,7 @@ class AddPluginPage extends React.Component {
                     {...formItemLayout}
                     label="Site web du créateur"
                 >
-                    {getFieldDecorator('creator-website', {
+                    {getFieldDecorator('creatorWebsite', {
                         rules: [{
                             type: 'url', message: "L'adresse n'a pas un format valide!",
                         }, {
@@ -385,7 +445,7 @@ class AddPluginPage extends React.Component {
                     {...formItemLayout}
                     label="Nom du vendeur"
                 >
-                    {getFieldDecorator('creator-name', {
+                    {getFieldDecorator('creatorName', {
                         rules: [{
                             required: true, message: 'Veuillez écrire un nom!',
                         }],
@@ -397,7 +457,7 @@ class AddPluginPage extends React.Component {
                     {...formItemLayout}
                     label="Nom du plugin"
                 >
-                    {getFieldDecorator('plugin-name', {
+                    {getFieldDecorator('pluginName', {
                         rules: [{
                             required: true, message: 'Veuillez écrire un nom!',
                         }],
@@ -409,7 +469,7 @@ class AddPluginPage extends React.Component {
                     {...formItemLayout}
                     label="Tag du plugin"
                 >
-                    {getFieldDecorator('multiple-tags', {
+                    {getFieldDecorator('multipleTags', {
                         rules: [
                         { required: true, message: 'Veuillez séléctionner au moins un tag', type: 'array' },
                         ],
@@ -426,12 +486,13 @@ class AddPluginPage extends React.Component {
                     label="Image du plugin"
                     extra="Format à respecter : 60x60"
                 >
-                    {getFieldDecorator('plugin-img', {
+                    {getFieldDecorator('pluginImg', {
                         rules: [
                             { required: false, message: 'Veuillez séléctionner une image!', type: 'array' },
                         ],
                         valuePropName: 'fileList',
                         getValueFromEvent: this.normFile,
+                        initialValue:[...fileList]
                     })(
                         <Upload name="pluginImg" customRequest={() => {return null}} listType="picture">
                         <Button>
@@ -445,7 +506,7 @@ class AddPluginPage extends React.Component {
                     {...formItemLayout}
                     label="Description"
                 >
-                    {getFieldDecorator('plugin-desc', {
+                    {getFieldDecorator('pluginDesc', {
                         rules: [{
                             required: true, message: 'Veuillez écrire un description!',
                         }],
@@ -455,9 +516,10 @@ class AddPluginPage extends React.Component {
                 </FormItem>
 
                 <FormItem>
-                  {getFieldDecorator('plugin-control')(
+                  {getFieldDecorator('pluginControl')(
                     <EditableTable
                     handler={this.handleAddControl}
+                    source={this.state.controlData}
                     />
                   )}
                 </FormItem>   
@@ -465,7 +527,7 @@ class AddPluginPage extends React.Component {
                 <FormItem
                     wrapperCol={{ span: 12, offset: 6 }}
                 >
-                    <Button type="primary" htmlType="submit">Ajouter plugin</Button>
+                    <Button type="primary" htmlType="submit">Modifier plugin</Button>
                     <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>Reinitialiser</Button>
                 </FormItem>          
             </Form>
@@ -473,4 +535,4 @@ class AddPluginPage extends React.Component {
         );
     } 
 }
-export default Form.create()(AddPluginPage);
+export default Form.create()(ModPluginPage);

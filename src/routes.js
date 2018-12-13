@@ -5,3 +5,4 @@ export const ADD_PLUGIN = '/add-plugin';
 export const LOGIN = '/login';
 export const REGISTER = '/register';
 export const PLUGIN = '/plugin/:id';
+export const MOD_PLUGIN = '/add-plugin/:id';

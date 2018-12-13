@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import firebase from '../firebase.js';
 import * as firebaseUtils from "../functions/firebaseUtils";
-import { Row, Col, Tag, Table } from 'antd';
+import { Row, Col, Tag, Table, Button } from 'antd';
 
 class PluginDetails extends Component {
     authListener
@@ -60,14 +60,12 @@ class PluginDetails extends Component {
         });
     }
 
-    removeItem(itemId) {
-        const itemRef = firebase.database().ref(`/plugins/${itemId}`);
-        itemRef.remove();
-    }
-
     render() {
         return (
             <div>
+                <Row type="flex" justify="end" align="top">
+                    <Button type="primary" href={this.props.location.pathname.split("/").slice(0,1).join("/")+"/add-plugin/"+this.state.param.id}>Modifier le plugin</Button><br/>
+                </Row>
                 <Row> 
                     <h1 style={{ textAlign: 'center' }}>{this.state.plugin.name}</h1>
                     <h3 style={{ textAlign: 'center' }}>
