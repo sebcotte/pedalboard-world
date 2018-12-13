@@ -108,7 +108,7 @@ class LoginPage extends React.Component {
                 <Checkbox>Se souvenir de moi</Checkbox>
               )}
               <Button type="primary" htmlType="submit" className="login-form-button">
-                Log in
+                Connexion
               </Button>
               Ou <Link to="/register">Inscrivez-vous maintenant</Link>
             </FormItem>

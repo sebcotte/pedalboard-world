@@ -37,10 +37,10 @@ class Navigation extends React.Component {
                         <Link to={routes.HOME}>Plugin store</Link>
                     </Menu.Item>
                     <Menu.Item key="2">
-                        <Link to={routes.ADD_PLUGIN}>Add plugin</Link>
+                        <Link to={routes.ADD_PLUGIN}>Ajouter plugin</Link>
                     </Menu.Item>
                     <Menu.Item key="3">
-                        <Link to={routes.ACCOUNT}>My account {this.state.user ? '('+this.state.user.email+')' : ''}</Link>
+                        <Link to={routes.ACCOUNT}>Mon compte {this.state.user ? '('+this.state.user.email+')' : ''}</Link>
                     </Menu.Item>
                 </Menu>
             </div>

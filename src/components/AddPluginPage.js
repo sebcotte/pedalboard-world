@@ -356,8 +356,8 @@ class AddPluginPage extends React.Component {
           <div>
             { this.state.isAddSuccess
               ? <Alert
-              message="Success Tips"
-              description="Detailed description and advices about successful copywriting."
+              message="Plugin ajouté avec succès !"
+              description="Votre plugin est désormais ajouté."
               type="success"
               showIcon
               />
@@ -462,8 +462,8 @@ class AddPluginPage extends React.Component {
                 <FormItem
                     wrapperCol={{ span: 12, offset: 6 }}
                 >
-                    <Button type="primary" htmlType="submit">Valider</Button>
-                    <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>Clear</Button>
+                    <Button type="primary" htmlType="submit">Ajouter plugin</Button>
+                    <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>Reinitialiser</Button>
                 </FormItem>          
             </Form>
           </div>
