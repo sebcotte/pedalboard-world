@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import './AddPluginPage.css';
-import { Form, Select, Upload, Button, Icon, Input, Table, Popconfirm } from 'antd';
+import { Form, Select, Upload, Button, Icon, Input, Table, Popconfirm, Alert } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import firebase from '../firebase.js';
 
@@ -163,15 +163,18 @@ class EditableTable extends React.Component {
       }];
   
       this.state = {
-        dataSource: [], 
+        dataSource: [],
         count: 0,
         displayTable: false
       };
     }
   
     handleDelete = (key) => {
-      const dataSource = [...this.state.dataSource];
-      this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+      const dataSource = [...this.state.dataSource].filter(item => item.key !== key);
+      this.setState({
+        dataSource: dataSource
+      });
+      this.props.handler(dataSource)
     }
   
     handleAdd = () => {
@@ -188,6 +191,7 @@ class EditableTable extends React.Component {
         count: count + 1,
         displayTable: true
       });
+      this.props.handler([...dataSource, newData])
     }
   
     handleSave = (row) => {
@@ -199,6 +203,7 @@ class EditableTable extends React.Component {
         ...row,
       });
       this.setState({ dataSource: newData });
+      this.props.handler(newData)
     }
   
     render() {
@@ -233,7 +238,7 @@ class EditableTable extends React.Component {
             components={components}
             rowClassName={() => 'editable-row'}
             bordered
-            dataSource={dataSource}
+            dataSource={this.state.dataSource}
             columns={columns}
           />
         </div>
@@ -247,6 +252,17 @@ class AddPluginPage extends React.Component {
   constructor() {
     super()
     this._authStrategy = firebaseUtils.connectedPage.bind(this)
+    this.handleAddControl.bind(this)
+    this.state = {
+      controlData: [],
+      isAddSuccess: false
+    }
+  }
+
+  handleAddControl = (e) => {
+    this.setState({
+      controlData: e
+    })
   }
 
   handleSubmit = (e) => {
@@ -261,6 +277,9 @@ class AddPluginPage extends React.Component {
   uploadPlugintoFirebase = (values) => {
     let dataref = firebase.database().ref('plugins');
 
+    // Create var of ctrls
+    let controls = this.state.controlData
+
     // Create a root reference
     let storageRef = firebase.storage().ref();
 
@@ -270,10 +289,8 @@ class AddPluginPage extends React.Component {
     var imagesRef = storageRef.child('images/'+img.name);
 
     var file = img // use the Blob or File API
-    imagesRef.put(file).then(function(snapshot) {
-      console.log('Uploaded a blob or file!');
-      snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        console.log("File available at", downloadURL);
+    imagesRef.put(file).then((snapshot) => {
+      snapshot.ref.getDownloadURL().then((downloadURL) => {
         let newPluginRef = dataref.push();
         newPluginRef.set({
           creator: values['creator-name'],
@@ -282,11 +299,12 @@ class AddPluginPage extends React.Component {
           tags: values['multiple-tags'],
           description: values['plugin-desc'],
           pic: downloadURL,
-          details: [
-            {control: '', max: 0, min: 0, value: 0},
-            {control: '', max: 0, min: 0, value: 0}
-          ]
+          details: controls
         });
+        this.handleReset()
+        this.setState({
+          isAddSuccess: true
+        })
       });
     });
   }
@@ -335,6 +353,16 @@ class AddPluginPage extends React.Component {
         };
 
         return (
+          <div>
+            { this.state.isAddSuccess
+              ? <Alert
+              message="Success Tips"
+              description="Detailed description and advices about successful copywriting."
+              type="success"
+              showIcon
+              />
+              : ''
+            }
             <Form onSubmit={this.handleSubmit}>
                 <FormItem
                     {...formItemLayout}
@@ -423,7 +451,13 @@ class AddPluginPage extends React.Component {
                     )}
                 </FormItem>
 
-                <EditableTable />   
+                <FormItem>
+                  {getFieldDecorator('plugin-control')(
+                    <EditableTable
+                    handler={this.handleAddControl}
+                    />
+                  )}
+                </FormItem>   
 
                 <FormItem
                     wrapperCol={{ span: 12, offset: 6 }}
@@ -432,6 +466,7 @@ class AddPluginPage extends React.Component {
                     <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>Clear</Button>
                 </FormItem>          
             </Form>
+          </div>
         );
     } 
 }
